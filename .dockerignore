@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/.env
+**/.env.*
+!**/.env.example
+# The backend's .env goes into the production image (CI writes it from PRODUCTION_ENV_FILE)
+!apps/backend/.env
+.git
+.agent
+.docs
+.claude
+**/logs

@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript/no-explicit-any": "off",
+    "typescript/no-floating-promises": "error",
+    "eslint/max-lines": [
+      "error",
+      {
+        "max": 200,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ]
+  },
+  "env": {
+    "node": true
+  },
+  "ignorePatterns": [
+    "src/generated/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "**/*.spec.ts",
+        "test/**"
+      ],
+      "rules": {
+        "eslint/max-lines": "off"
+      }
+    }
+  ]
+}

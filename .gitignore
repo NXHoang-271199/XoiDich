@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.next/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store
+logs/*
+!logs/.gitkeep
+**/logs/*.log
+# SSL certificates / private keys never go into git
+docker/production/nginx/certs/*
+!docker/production/nginx/certs/.gitkeep

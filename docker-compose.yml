@@ -1,0 +1,92 @@
+# Local development: Postgres + Redis + backend + frontend with hot reload.
+#
+#   docker compose up -d --build
+#
+# The server uses docker-compose.production.yml instead (no database there:
+# the app connects to the real DB through the DB_* keys in apps/backend/.env).
+services:
+  db:
+    image: postgres:17-alpine
+    # Vietnam time for now(), CURRENT_DATE and server logs
+    command: ["postgres", "-c", "timezone=Asia/Ho_Chi_Minh", "-c", "log_timezone=Asia/Ho_Chi_Minh"]
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: xoidich
+    # Bound to 127.0.0.1: for pnpm dev, Prisma CLI and Navicat on this machine only.
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata_local:/var/lib/postgresql/data
+      - ./docker/local/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d xoidich"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redisdata_local:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/local/backend/Dockerfile
+    env_file: apps/backend/.env
+    # apps/backend/.env says "localhost" so the same file works for `pnpm dev` on the
+    # host; inside this container the db/redis containers are reached by name.
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      LOG_DIR: /repo/apps/backend/logs
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./apps/backend:/repo/apps/backend
+      - /repo/apps/backend/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/local/frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api
+      # Server-side requests run inside the container, where "localhost" is the frontend itself.
+      API_INTERNAL_URL: http://backend:4000/api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/frontend:/repo/apps/frontend
+      - /repo/apps/frontend/node_modules
+      - /repo/apps/frontend/.next
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata_local:
+  redisdata_local:

@@ -1,0 +1,16 @@
+packages:
+  - apps/*
+
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+  prisma: true
+  '@prisma/engines': true
+  '@nestjs/core': false
+  esbuild: false
+  '@scarf/scarf': false
+
+# Security pins for transitive dependencies (remove once the parent package ships the fix).
+overrides:
+  # GHSA-q7qp-rjg7-q26m (DoS), pulled in by @nestjs/platform-express
+  multer: ^2.5.0

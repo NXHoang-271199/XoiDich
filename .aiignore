@@ -1,0 +1,13 @@
+# File AI không cần đọc (tiết kiệm token)
+node_modules/
+**/dist/
+**/.next/
+**/coverage/
+**/generated/
+pnpm-lock.yaml
+*.tsbuildinfo
+**/public/*.svg
+**/*.ico
+.docs/archive/
+.env
+.env.*

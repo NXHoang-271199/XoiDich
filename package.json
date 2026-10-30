@@ -1,0 +1,25 @@
+{
+  "name": "xoidich",
+  "private": true,
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter frontend --filter backend run dev",
+    "dev:fe": "pnpm --filter frontend dev",
+    "dev:be": "pnpm --filter backend dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm --filter backend test",
+    "test:e2e": "pnpm --filter backend test:e2e",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "db:generate": "pnpm --filter backend exec prisma generate",
+    "db:migrate": "pnpm --filter backend exec prisma migrate dev",
+    "db:studio": "pnpm --filter backend exec prisma studio",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "husky": "^9.1.7"
+  }
+}

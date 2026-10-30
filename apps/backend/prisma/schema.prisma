@@ -1,0 +1,10 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Models are added per feature. Conventions: table/column names in snake_case via @@map / @map.
